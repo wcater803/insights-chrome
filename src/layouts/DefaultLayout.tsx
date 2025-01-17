@@ -12,7 +12,7 @@ import isEqual from 'lodash/isEqual';
 import ChromeRoutes from '../components/Routes/Routes';
 import useOuiaTags from '../utils/useOuiaTags';
 import RedirectBanner from '../components/Stratosphere/RedirectBanner';
-import { useAtomValue } from 'jotai';
+import { useAtom } from 'jotai';
 
 import { useIntl } from 'react-intl';
 import messages from '../locales/Messages';
@@ -49,7 +49,6 @@ type DefaultLayoutProps = {
 
 const DefaultLayout: React.FC<DefaultLayoutProps> = ({ hasBanner, selectedAccountNumber, hideNav, isNavOpen, setIsNavOpen, Sidebar, Footer }) => {
   const drawerPanelRef = useRef<HTMLDivElement>(null);
-  // const toggleDrawer = useSetAtom(notificationDrawerExpandedAtom);
   useEffect(() => {
     if (drawerPanelRef.current !== null) {
       focusDrawer();
@@ -65,9 +64,12 @@ const DefaultLayout: React.FC<DefaultLayoutProps> = ({ hasBanner, selectedAccoun
       tabbableElement.focus();
     }
   };
+  const toggleDrawer = () => {
+    setIsNotificationsDrawerExpanded((prev) => !prev);
+  };
   const intl = useIntl();
   const { loaded, schema, noNav } = useNavigation();
-  const isNotificationsDrawerExpanded = useAtomValue(notificationDrawerExpandedAtom);
+  const [isNotificationsDrawerExpanded, setIsNotificationsDrawerExpanded] = useAtom(notificationDrawerExpandedAtom);
   const isNotificationsEnabled = useFlag('platform.chrome.notifications-drawer');
 
   return (
@@ -90,7 +92,7 @@ const DefaultLayout: React.FC<DefaultLayoutProps> = ({ hasBanner, selectedAccoun
       }
       {...(isNotificationsEnabled && {
         onNotificationDrawerExpand: focusDrawer,
-        notificationDrawer: <DrawerPanel ref={drawerPanelRef} />,
+        notificationDrawer: <DrawerPanel ref={drawerPanelRef} toggleDrawer={toggleDrawer} />,
         isNotificationDrawerExpanded: isNotificationsDrawerExpanded,
       })}
       sidebar={
